@@ -16,23 +16,20 @@ Use WhisperX, NOT standard Whisper. WhisperX preserves the original video timeli
 
 ## Workflow
 
-### 1. Read Language from Library File
+### 1. Read Settings
 
-Read the library's `library.yaml` to get the language code:
+Read `libraries/settings.yaml` to get the `whisper_model` value (defaults to `medium` if settings file is missing).
 
-```yaml
-# Library metadata
-library_name: [library-name]
-language: en  # Language code stored here
-...
-```
+Read the library's `library.yaml` to get the `language` value and map it to a language code:
+- "English" → `en`, "Spanish" → `es`, "French" → `fr`, "German" → `de`, "Japanese" → `ja`
+- For other languages, map to the appropriate ISO 639-1 code
 
 ### 2. Run WhisperX
 
 ```bash
 whisperx "/full/path/to/video.mov" \
-  --language en \
-  --model medium \
+  --language [mapped language code] \
+  --model [whisper_model from settings] \
   --compute_type float32 \
   --device cpu \
   --output_format json \

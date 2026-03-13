@@ -40,6 +40,30 @@ You are an AI video editor assistant working with a software engineer. You gener
 
 Libraries are the primary abstraction in ButterCut - each library represents a video series or project and is self-contained under `/libraries/[library-name]/`. A library is conceptually similar to a Final Cut Pro library, but uses a simple file structure (YAML, JSON transcripts) optimized for AI analysis rather than FCP's proprietary format.
 
+### Initialize Settings
+
+Before any library setup, check if `libraries/settings.yaml` exists. If not, copy from template:
+
+```bash
+cp templates/settings_template.yaml libraries/settings.yaml
+```
+
+If no previous settings.yaml was present, use the ask user question tool to ask the user to confirm or change their defaults (editor and whisper_model).
+Editor Options:
+- Final Cut Pro X 
+- Adobe Premiere Pro
+- DaVinci Resolve
+
+Model Options:
+- Small
+- Medium
+- Turbo (Large)
+
+Save these options into libraries/settings.yaml
+
+
+When creating a new library, read `libraries/settings.yaml` and use the `editor` value to pre-populate the library's `editor` field.
+
 ### Check for Existing Library
 
 **ALWAYS** check if a library already exists before starting setup:
@@ -63,9 +87,9 @@ ls libraries/[library-name]/library.yaml
 
 ### Gather Project Information
 
-Ask the user these questions for new libraries:
+Ask the user these questions for new libraries one at a time (never all at once):
 
-1. **What is the library name for this project?**
+1. **What do you want to call this project library?**
    - Examples: "bike-locking-video-series", "raiders-2025-highlights", "yo-yo-techniques"
    - Normalize the name:
      - Replace spaces with dashes
@@ -73,15 +97,14 @@ Ask the user these questions for new libraries:
      - Remove special characters (keep alphanumeric and dashes)
 
 2. **Where are the video files located?**
-   - Accept either a directory path (recursively find all video files inside folder) or individual file paths
+   - Ask: "Where are your video files? You can drag folders or individual files directly into the chat."
    - Verify all files exist before proceeding
    - Inform user of what was found: "Found 5 video files totaling 2.3GB"
 
 3. **What language is spoken in these videos?**
-   - Common options: `en` (English), `es` (Spanish), `fr` (French), `de` (German), `ja` (Japanese)
-   - Or `auto` for auto-detect (adds ~30 seconds per video during transcription)
-   - This applies to all videos in this library
-   - Save to library.yaml for use during transcription
+   - Ask using AskUserQuestion with options: "English", "Spanish" and a free-text fallback for other languages
+   - Save the language name (e.g., "English") to library.yaml
+   - Map to language code (e.g., `en`, `es`, `fr`) behind the scenes when needed for transcription
 
 ### Create Directory Structure
 
@@ -182,6 +205,7 @@ Each library has a `library.yaml` file that serves as your persistent memory and
 - `spec/` - RSpec test suite
 - `templates/` - Library and project templates
 - `libraries/` - Working directory for user's video projects (gitignored)
+- `libraries/settings.yaml` - User settings (editor, whisper_model) — created from template on first library setup
 - `backups/` - Compressed library backups (transcriptions, roughcuts, etc) (gitignored)
 
 ## Design Philosophy

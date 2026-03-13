@@ -1,0 +1,9 @@
+# ButterCut User Settings
+# Copy this file to libraries/settings.yaml to configure defaults
+
+# Preferred video editor: fcpx, premiere, or resolve
+editor: fcpx
+
+# WhisperX model size: tiny, base, small, medium, or turbo
+# turbo is nearly as accurate as large-v3 but significantly faster
+whisper_model: medium
