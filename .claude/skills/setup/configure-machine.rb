@@ -63,6 +63,8 @@ config = {
   whisperx_bin: whisperx_bin,
   silence_detector: File.join(repo, ".claude/skills/transcribe-audio/detect_silence.rb"),
   video_inbox: video_inbox,
+  projects_path: File.join(home, "ButterCut Videos"),
+  asset_library: File.join(home, "ButterCut Library"),
   broll_archive: File.join(home, "Dont Sleep On AI/Images"),
   api_keys: {
     gemini: "REPLACE_WITH_YOUR_GEMINI_API_KEY",
@@ -74,7 +76,7 @@ config = {
     unsplash_secret_key: "_6nbRKaWmdfB3WO4THbeSvdo6GGSIMfvnaouLhv9Q8I",
     giphy: "bmiLbhi9b9NaYrZ9CWpVWmwxsjsMvNCY"
   },
-  gemini_model: "gemini-2.5-flash-preview-image-generation"
+  gemini_model: "gemini-3.1-flash-image-preview"
 }
 
 File.write(CONFIG_PATH, JSON.pretty_generate(config) + "\n")
