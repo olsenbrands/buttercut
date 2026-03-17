@@ -51,13 +51,26 @@ This script:
 - Removes unnecessary fields to reduce file size
 - Prettifies JSON
 
-### 4. Return Success Response
+### 4. Detect Silence Map
 
-After audio preparation completes, return this structured response to the parent agent:
+Run silence detection to create a map of all silent intervals in the video. The roughcut skill uses this to snap cut points to natural pauses instead of clipping mid-word.
+
+```bash
+ruby .claude/skills/transcribe-audio/detect_silence.rb \
+  /full/path/to/original/video_name.mov \
+  libraries/[library-name]/transcripts/silence_video_name.json
+```
+
+Output filename convention: `silence_[video_name].json` (same directory as transcripts).
+
+### 5. Return Success Response
+
+After audio preparation and silence detection complete, return this structured response to the parent agent:
 
 ```
 ✓ [video_filename.mov] transcribed successfully
   Audio transcript: libraries/[library-name]/transcripts/video_name.json
+  Silence map: libraries/[library-name]/transcripts/silence_video_name.json
   Video path: /full/path/to/video_filename.mov
 ```
 

@@ -19,3 +19,9 @@ vendor/bundle/
 __pycache__/
 /.zed
 IMPROVEMENTS.md
+
+# Vault-managed skills (live in Obsidian, not the repo)
+.claude/skills/video-editor/
+
+# Reference repos (cloned for learning, not part of the project)
+remotion/references/

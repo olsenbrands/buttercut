@@ -65,7 +65,14 @@ config = {
   video_inbox: video_inbox,
   broll_archive: File.join(home, "Dont Sleep On AI/Images"),
   api_keys: {
-    gemini: "REPLACE_WITH_YOUR_GEMINI_API_KEY"
+    gemini: "REPLACE_WITH_YOUR_GEMINI_API_KEY",
+    freesound_client_id: "LJUZyMJT1pIGNGFHRBb9",
+    freesound_api_key: "cF8lgWG2phCvOF0XbAkuZ8myDR0M6svsSW2blSmN",
+    pexels: "KzHGLkvxxacTfdfneoP90f1kHlRQOJ8SJGhTz6yhEL9tWBnjC8lQypnH",
+    pixabay: "55058487-1ea2b3e0a47026bfd6ca1e89f",
+    unsplash_access_key: "uoUYZdBjFzqpbEcJqT21lH5-ggYmtsgu9WhAnABtAgo",
+    unsplash_secret_key: "_6nbRKaWmdfB3WO4THbeSvdo6GGSIMfvnaouLhv9Q8I",
+    giphy: "bmiLbhi9b9NaYrZ9CWpVWmwxsjsMvNCY"
   },
   gemini_model: "gemini-2.5-flash-preview-image-generation"
 }

@@ -19,3 +19,4 @@ videos:
     duration: "00:05:32"
     transcript: # filename only (stored in libraries/[library-name]/transcripts/)
     visual_transcript: # filename only (visual_*.json with frame descriptions)
+    silence_map: # filename only (silence_*.json with silence intervals for smart cuts)

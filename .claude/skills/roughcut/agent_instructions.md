@@ -40,7 +40,19 @@ This outputs to `tmp/[library-name]/[roughcut_name]_combined_visual_transcript.j
 - `visual`: Shot description (only present when visual changes)
 - `b_roll`: `true` when segment is silent B-roll (only present when true)
 
-### 3. Read and Analyze Combined Transcript
+### 3. Load Silence Maps
+
+Check for silence map files in the transcripts folder:
+
+```bash
+ls libraries/[library-name]/transcripts/silence_*.json
+```
+
+If silence maps exist, read them. Each contains an array of `{start, end, duration}` silence intervals for that video. Keep these in context — you'll reference them when choosing in/out points in step 4.
+
+If no silence maps exist, proceed without them (use fallback timecode logic with 0.15s padding).
+
+### 4. Read and Analyze Combined Transcript
 
 **Count lines and plan reading:**
 ```bash
@@ -51,7 +63,7 @@ wc -l tmp/[library-name]/[roughcut_name]_combined_visual_transcript.json
 
 After reading through footage sequentially, you can spend a little time thinking, and then create the roughcut yaml file.
 
-### 4. Create Rough Cut YAML
+### 5. Create Rough Cut YAML
 
 **Generate a timestamp** using `date +%Y%m%d_%H%M%S` and use the resulting value as a literal string in all filenames for this roughcut session (YAML and XML).
 
@@ -65,11 +77,29 @@ cp templates/roughcut_template.yaml "libraries/[library-name]/roughcuts/[roughcu
 - Convert timestamps from seconds to `HH:MM:SS.ss` format (hundredths of second precision)
 - Reference video files using `source_file` from the combined JSON
 
-**CRITICAL - Timecode Logic:**
+**CRITICAL - Timecode Logic (Silence-Aware Cuts):**
+
+If a silence map exists for the video (`silence_[video_name].json` in the transcripts folder), use it to make cleaner cuts:
+
+1. **Find the target cut point** from the transcript segment's `start` or `end` timestamp
+2. **Search the silence map** for the nearest silence interval within 0.5s of the target
+3. **Snap the cut point into the silence** — cut in the middle of the silence gap, not at the edge
+4. **Add padding** — if no silence is found nearby, add 0.15s padding before `in_point` and after `out_point` to avoid clipping mid-syllable
+
+This prevents cuts that chop into words, breaths, or natural speech tails.
+
+**Fallback (no silence map):**
 - `in_point`: Start time of FIRST segment you want
 - `out_point`: End time of LAST segment you want
 - Use `start` and `end` from segments directly (preserve sub-second precision)
-- Example: segment at 2.849s-29.63s → in_point: `00:00:02.85`, out_point: `00:00:29.63`
+
+**Example with silence map:**
+- Transcript segment ends at 4.214s
+- Silence map shows silence from 4.15s to 4.95s
+- Cut at ~4.55s (middle of silence) instead of 4.214s (end of last word)
+
+**Example without silence map:**
+- Segment at 2.849s-29.63s → in_point: `00:00:02.85`, out_point: `00:00:29.63`
 
 **CRITICAL - Required Fields:**
 Each clip needs:
@@ -80,7 +110,7 @@ Each clip needs:
 - `created_date`: `YYYY-MM-DD HH:MM:SS`
 - `total_duration`: Sum of all clips in `HH:MM:SS.ss` format
 
-### 5. Export to Video Editor
+### 6. Export to Video Editor
 
 Check `library.yaml` for the `editor` field. If it's set, use that value. If it's not set or empty, check `libraries/settings.yaml` for the default `editor` value and use that (also save it back to `library.yaml`). If neither has an editor set, ask the user for their editor choice (Final Cut Pro X, Adobe Premiere Pro, or DaVinci Resolve), then save their choice back to both `library.yaml` and `libraries/settings.yaml`.
 
@@ -96,11 +126,11 @@ bundle exec ./.claude/skills/roughcut/export_to_fcpxml.rb libraries/[library-nam
 bundle exec ./.claude/skills/roughcut/export_to_fcpxml.rb libraries/[library-name]/roughcuts/[roughcut_name]_[datetime].yaml libraries/[library-name]/roughcuts/[roughcut_name]_[datetime].xml resolve
 ```
 
-### 6. Create Backup
+### 7. Create Backup
 
 Run the `backup-library` skill to preserve the completed work.
 
-### 7. Report Results
+### 8. Report Results
 
 Provide summary with:
 - Rough cut name and duration
